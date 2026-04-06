@@ -1,4 +1,5 @@
 📌 Overview
+
 This project implements a metadata‑driven, incremental ingestion and transformation framework designed to move complex Salesforce datasets into a scalable, governed, and analytics‑ready Delta Lake architecture on Databricks.
 
 The solution orchestrates the extraction of 30+ Salesforce objects using Azure Data Factory, applies dynamic parameterization for object‑specific logic, and lands raw Parquet files into Azure Data Lake Storage Gen2 with enterprise‑grade partitioning, audit logging, and schema drift handling.
