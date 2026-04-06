@@ -12,45 +12,92 @@ This architecture demonstrates expertise in cloud integration, workflow orchestr
 ```mermaid
 flowchart TB
 
-    %% SOURCE
+    %% ============================
+    %% SOURCE SYSTEM
+    %% ============================
     subgraph SRC[Source Layer]
         LEGACY[Legacy System<br/>Operational Data]
+        METADATA[Metadata & Control Tables<br/>Run Status / Audit Flags]
     end
 
+    %% ============================
     %% INFORMATICA CLOUD
-    subgraph IICS[Informatica Cloud IICS]
+    %% ============================
+    subgraph IICS[Informatica Cloud]
         EXTRACT[Extract Task<br/>Source to Staging]
         LOAD[Load Task<br/>Azure SQL Tables]
-        CAI[CAI Process<br/>Workflow Orchestration<br/>Success/Failure Events]
+        CAI[CAI Workflow<br/>Orchestration Events]
+        ERR[Error Handling<br/>Retry Logic / Notifications]
     end
 
-    %% AZURE SQL
+    %% ============================
+    %% AZURE SQL DATABASE
+    %% ============================
     subgraph SQL[Azure SQL Database]
-        TABLES[Raw Tables<br/>Loaded by IICS]
+        STAGING[Staging Tables<br/>Raw Loaded Data]
         VIEWS[Analytical Views<br/>Chart Input Models]
+        DQ[Data Quality Checks<br/>Validation Rules]
+        AUDIT[Audit Tables<br/>Run IDs / Checksums]
     end
 
-    %% AUTOMATION
-    subgraph FLOW[Microsoft Power Automate]
+    %% ============================
+    %% POWER AUTOMATE
+    %% ============================
+    subgraph FLOW[Power Automate Flow]
         TRIGGER[Trigger on CAI Completion]
         QUERY[SQL Query Action<br/>Fetch View Data]
-        IMGAPI[Call ImageCharts.io<br/>Generate Chart URL]
-        ADAPT[Adaptive Card Builder]
+        FORMAT[Data Formatting<br/>JSON Payload Builder]
+        IMGAPI[ImageCharts API<br/>Generate Chart URL]
+        ADAPT[Adaptive Card Builder<br/>Embed Chart]
+        FLOWLOGS[Flow Logs<br/>Run History]
     end
 
-    %% DELIVERY
-    subgraph TEAMS[Microsoft Teams Delivery]
-        POST[Post Adaptive Card<br/>With Chart Image]
+    %% ============================
+    %% TEAMS DELIVERY
+    %% ============================
+    subgraph TEAMS[Microsoft Teams]
+        POST[Post Adaptive Card<br/>Chart Delivered]
     end
 
+    %% ============================
+    %% OBSERVABILITY
+    %% ============================
+    subgraph OBS[Observability & Monitoring]
+        IICSLOGS[IICS Logs<br/>Task Runs / Failures]
+        SQLMON[SQL Monitoring<br/>Query Performance]
+        FLOWMON[Flow Monitoring<br/>Run Status]
+        ALERTS[Alerts & Notifications]
+    end
+
+    %% ============================
     %% FLOWS
+    %% ============================
+
     LEGACY --> EXTRACT
     EXTRACT --> LOAD
-    LOAD --> TABLES
-    TABLES --> VIEWS
+    LOAD --> STAGING
+    STAGING --> VIEWS
+    VIEWS --> DQ
+    DQ --> AUDIT
+
     CAI --> TRIGGER
     TRIGGER --> QUERY
-    QUERY --> IMGAPI
+    QUERY --> FORMAT
+    FORMAT --> IMGAPI
     IMGAPI --> ADAPT
     ADAPT --> POST
+
+    %% OBSERVABILITY CONNECTIONS
+    EXTRACT --> IICSLOGS
+    LOAD --> IICSLOGS
+    VIEWS --> SQLMON
+    QUERY --> FLOWMON
+    ADAPT --> FLOWMON
+    FLOWMON --> ALERTS
+    IICSLOGS --> ALERTS
+    SQLMON --> ALERTS
+
+    %% ERROR HANDLING
+    CAI --> ERR
+    ERR --> ALERTS
 ```
