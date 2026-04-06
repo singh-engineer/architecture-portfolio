@@ -6,7 +6,7 @@ The workflow begins with AWS‑based triggers that invoke Snowflake stored proce
 
 An SNS topic is configured to listen for new output files and automatically notifies Snowpipe, enabling auto‑ingest into Snowflake target tables with minimal latency. This architecture demonstrates strong command of serverless orchestration, event‑based processing, Snowflake integration patterns, and AWS‑native automation, delivering a robust and scalable data pipeline suitable for enterprise workloads.
 
-
+🏗️ Enterprise Architecture Diagram
 
 ```mermaid
 flowchart TB
