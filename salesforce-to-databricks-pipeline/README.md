@@ -8,7 +8,7 @@ From there, Databricks processes the data through the Bronze → Silver → Gold
 
 This architecture reflects modern data engineering best practices, including incremental ingestion, Delta Lake ACID guarantees, observability, error‑resilient orchestration, and layer‑aware governance across the entire data lifecycle.
 
-## 🏗️ Enterprise Architecture Diagram (Advanced)
+🏗️ Enterprise Architecture Diagram
 
 ```mermaid
 flowchart TB
